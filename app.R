@@ -25,15 +25,22 @@ ui <- fluidPage(
                    "What is your age?", value = 55),
       radioButtons(inputId = "sex",
                    "Are you male or female?",
+                   selected = character(0),
                    choices = c("Male" = "no",
                                "Female" = "yes")),
-      checkboxInput(inputId = "hf", "Have you previously had heart failure?",
-                    value = F),
+    radioButtons(inputId = "hf",
+                 "Have you previously had heartfailure?",
+                 selected = character(0),
+                 choices = c("No" = "no",
+                             "Yes" = "yes")),
+    radioButtons(inputId = "stroke",
+                 "Have you ever had a stroke?",
+                 selected = character(0),
+                 choices = c("No" = "no",
+                             "Yes" = "yes")),
       checkboxInput(inputId = "hf", "Do you have hypertension",
                     value = F),
       checkboxInput(inputId = "hf", "Do you have diabetes?",
-                    value = F),
-      checkboxInput(inputId = "hf", "Have you ever had a stroke?",
                     value = F)
     ),
     
@@ -56,8 +63,20 @@ server <- function(input, output) {
   #   hist(stroke.dt[.(input$user_age), stroke1y], breaks = 5, col = 'darkgray', border = 'white')
   # })
   output$textRisk <- renderText({
-   paste0(min((stroke.dt[.(input$user_age, input$sex), stroke1y])), "%", " and ",
-          max((stroke.dt[.(input$user_age, input$sex), stroke1y])), "%")
+   paste0(min((stroke.dt[.(input$user_age,
+                           input$sex,
+                           input$hf,
+                           input$stroke),
+                         stroke1y])),
+          
+          "%", " and ",
+          
+          max((stroke.dt[.(input$user_age,
+                           input$sex,
+                           input$hf,
+                           input$stroke),
+                         stroke1y]))
+          , "%")
   })
 }
 
