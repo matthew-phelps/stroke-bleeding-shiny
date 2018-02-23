@@ -1,53 +1,86 @@
 library(shiny)
 library(riskvisrr)
 library(data.table)
+library(magrittr)
 stroke.dt <- data.table(stroke1yr)
-var.names <- c("age",
-               "heartfailure",
-               "hypertension",
-               "diabetes",
-               "vascular",
-               "female",
-               "stroke")
-setkeyv(stroke.dt, var.names)
+
+# Re-order columns to the order patients will enter their variables information
+# into the shiny app
+new.var.order <-  c("age",
+                    "female",
+                    "stroke",
+                    "heartfailure",
+                    "diabetes",
+                    "hypertension",
+                    "vascular",
+                    "chadsvasc",
+                    "stroke1y.lower",
+                    "stroke1y",
+                    "stroke1y.upper",
+                    "I63.lower",
+                    "I63",
+                    "I63.upper",
+                    "thromb1y.lower",
+                    "thromb1y",
+                    "thromb1y.upper",
+                    "year2000")
+
+setcolorder(stroke.dt,new.var.order)
+
+setkeyv(stroke.dt, new.var.order)
 
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
   
   # Application title
-  titlePanel("Stroke Risk Visualizatoin"),
+  titlePanel("Stroke Risk Communication"),
   
   # Sidebar with a slider input for number of bins 
   sidebarLayout(
     sidebarPanel(
       numericInput(inputId = "user_age",
-                   "What is your age?", value = 55),
+                   "What is your age?", value = NULL,
+                   min = 20, max = 99),
       radioButtons(inputId = "sex",
                    "Are you male or female?",
                    selected = character(0),
                    choices = c("Male" = "no",
                                "Female" = "yes")),
-    radioButtons(inputId = "hf",
-                 "Have you previously had heartfailure?",
-                 selected = character(0),
-                 choices = c("No" = "no",
-                             "Yes" = "yes")),
-    radioButtons(inputId = "stroke",
-                 "Have you ever had a stroke?",
-                 selected = character(0),
-                 choices = c("No" = "no",
-                             "Yes" = "yes")),
-      checkboxInput(inputId = "hf", "Do you have hypertension",
-                    value = F),
-      checkboxInput(inputId = "hf", "Do you have diabetes?",
-                    value = F)
+      radioButtons(inputId = "stroke",
+                   "Have you ever had a stroke?",
+                   selected = character(0),
+                   choices = c("No" = "no",
+                               "Yes" = "yes")),
+      radioButtons(inputId = "hf",
+                   "Have you previously had heart failure?",
+                   selected = character(0),
+                   choices = c("No" = "no",
+                               "Yes" = "yes")),
+      radioButtons(inputId = "diabetes",
+                   "Have you ever had a diabetes?",
+                   selected = character(0),
+                   choices = c("No" = "no",
+                               "Yes" = "yes")),
+      radioButtons(inputId = "hyperT",
+                   "Have you ever had a hypertension?",
+                   selected = character(0),
+                   choices = c("No" = "no",
+                               "Yes" = "yes")),
+      radioButtons(inputId = "vasc",
+                   "Do you have vascular disease?",
+                   selected = character(0),
+                   choices = c("No" = "no",
+                               "Yes" = "yes")),
+      numericInput(inputId = "chadsvasc",
+                   "What is your CHADSVASC score?", value = 0,
+                   min = 0, max = 7)
     ),
     
     # Show a plot of the generated distribution
     mainPanel(
       plotOutput("distPlot"),
-      tags$h2("Your 1-year risk of stroke is between :"),
+      tags$h2("Your risk of having a stroke in the next year is between :"),
       tags$h2(strong(textOutput("textRisk")))
       
     )
@@ -56,27 +89,43 @@ ui <- fluidPage(
 
 # Define server logic
 server <- function(input, output) {
- 
-  # output$distPlot <- renderPlot({
-  #   browser()
-  #   # draw the histogram with the specified number of bins
-  #   hist(stroke.dt[.(input$user_age), stroke1y], breaks = 5, col = 'darkgray', border = 'white')
-  # })
+  is.valid.age <- reactive({
+    # This is only run if the created expression is evaluated inside another
+    # reactive function - I think
+    !is.na(input$user_age) &&
+      input$user_age >= 20 &&
+      input$user_age <= 99
+  })
   output$textRisk <- renderText({
-   paste0(min((stroke.dt[.(input$user_age,
-                           input$sex,
-                           input$hf,
-                           input$stroke),
-                         stroke1y])),
-          
-          "%", " and ",
-          
-          max((stroke.dt[.(input$user_age,
-                           input$sex,
-                           input$hf,
-                           input$stroke),
-                         stroke1y]))
-          , "%")
+    
+    # Order of subset arguments must be same order as new.col.order variable set in
+    # intro.
+     # browser()
+    if (is.valid.age()) {
+      paste0(min((stroke.dt[.(input$user_age,
+                            input$sex,
+                            input$stroke,
+                            input$hf,
+                            input$diabetes,
+                            input$hyperT,
+                            input$vasc),
+                          stroke1y])),
+
+           "%", " and ",
+
+           max((stroke.dt[.(input$user_age,
+                            input$sex,
+                            input$stroke,
+                            input$hf,
+                            input$diabetes,
+                            input$hyperT,
+                            input$vasc),
+                          stroke1y]))
+           , "%")
+    }
+    else{
+      paste0("Please enter your age (between 20 and 99)")
+      }
   })
 }
 
