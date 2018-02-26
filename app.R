@@ -81,7 +81,11 @@ ui <- fluidPage(
     mainPanel(
       plotOutput("distPlot"),
       tags$h2("Your risk of having a stroke in the next year is between :"),
-      tags$h2(strong(textOutput("textRisk")))
+      tags$h2(strong(textOutput("textRisk"))),
+      br(),
+      hr(),
+      tags$h3("Table for error checking"),
+      DT::dataTableOutput("table")
       
     )
   )
@@ -127,6 +131,17 @@ server <- function(input, output) {
       paste0("Please enter your age (between 20 and 99)")
       }
   })
+
+  output$table <- DT::renderDataTable(
+    DT::datatable(stroke.dt[.(input$user_age,
+                              input$sex,
+                              input$stroke,
+                              input$hf,
+                              input$diabetes,
+                              input$hyperT,
+                              input$vasc),
+                            1:10])
+  )
 }
 
 # Run the application 
