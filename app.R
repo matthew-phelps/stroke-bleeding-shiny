@@ -85,6 +85,7 @@ ui <- fluidPage(
       br(),
       hr(),
       tags$h3("Table for error checking"),
+      br(),
       DT::dataTableOutput("table")
       
     )
@@ -106,26 +107,26 @@ server <- function(input, output) {
     # intro.
      # browser()
     if (is.valid.age()) {
-      paste0(min((stroke.dt[.(input$user_age,
+      paste0(stroke.dt[.(input$user_age,
                             input$sex,
                             input$stroke,
                             input$hf,
                             input$diabetes,
                             input$hyperT,
                             input$vasc),
-                          stroke1y])),
+                          min(stroke1y)],
 
            "%", " and ",
 
-           max((stroke.dt[.(input$user_age,
+           stroke.dt[.(input$user_age,
                             input$sex,
                             input$stroke,
                             input$hf,
                             input$diabetes,
                             input$hyperT,
                             input$vasc),
-                          stroke1y]))
-           , "%")
+                          max(stroke1y)],
+           "%")
     }
     else{
       paste0("Please enter your age (between 20 and 99)")
@@ -147,3 +148,10 @@ server <- function(input, output) {
 # Run the application 
 shinyApp(ui = ui, server = server)
 
+# age == input$user_age &
+# female == input$sex &
+# stroke == input$stroke &
+# heartfailure == input$hf &
+# diabetes == input$diabetes &
+# hypertension == input$hyperT &
+# vascular == input$vasc,
