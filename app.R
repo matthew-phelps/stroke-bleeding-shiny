@@ -2,6 +2,7 @@ library(shiny)
 library(riskvisrr)
 library(data.table)
 library(shinyWidgets)
+source("functions.R")
 stroke.dt <- data.table(stroke1yr)
 
 # Re-order columns to the order patients will enter their variables information
@@ -28,65 +29,37 @@ new.var.order <-  c("age",
 setcolorder(stroke.dt,new.var.order)
 setkeyv(stroke.dt, new.var.order)
 
-# functions ---------------------------------------------------------------
-jsButtonColor <- function(var, color, value){
-  # Makes simple js code to color buttons in shinyWidgets library. From:
-  # https://github.com/dreamRs/shinyWidgets/issues/41
-  # var, color and yes/no need to be in quotes
-  paste0("$(\"input:radio[name='",
-         var,
-         "'][value='",
-         paste0("&quote",value, "&quote"),
-         "']\").parent().css('background-color', '",
-         color,
-         "');")  
-}
-depSub <- function(a){
-  # shortcut helper n
-  deparse(substitute(a))
-}
-f <- function(x) substitute(x)
-g <- function(x) {
-  # browser()
-  deparse(f(x))
-}
-class(substitute(1:10))
-class(quote(1:10))
 
-evPar <- function(x){
-  # short helper fun
-  eval(parse(text = x))
-}
 # jsButtonColor("stroke", "EDB6B2", depSub(Yes))
 
 # Variables ---------------------------------------------------------------
 
-button.width <- "210px"
+button.width <- "290px"
 
 
 # UI ----------------------------------------------------------------------
 
 # Define UI for application that draws a histogram
-ui <- fluidPage(# Application title
-  titlePanel("Stroke Risk Communication"),
+ui <- fluidPage(
+  # Application title
+  titlePanel("Draft stroke risk calculator"),
   
   # Sidebar with a slider input for number of bins
-  sidebarLayout(
-    sidebarPanel(
+  fluidRow(column(
+    6,
+    wellPanel(
       tags$style("#user_age {font-size:38px;height:50px; width: 110px;}"),
-      numericInput(
+      textInput(
         inputId = "user_age",
-        "Patient's age:",
+        label = "Patient's age:",
         value = NULL,
-        min = 20,
-        max = 99
+        placeholder = "Age"
       ),
-      
       radioGroupButtons(
         inputId = "sex",
         label = "Male or female:",
         choices = c(
-          "Not <br>selected" = depSub(c("no", "yes")),
+          "Unknown" = depSub(c("no", "yes")),
           "Male<br>" = depSub("no"),
           "Female" = depSub("yes")
         ),
@@ -98,7 +71,7 @@ ui <- fluidPage(# Application title
       radioGroupButtons(
         inputId = "stroke",
         "Have you ever had a stroke?",
-        choiceNames = c(HTML("Not <br/>selected"), "No", "Yes"),
+        choiceNames = c(HTML("Unknown"), "No", "Yes"),
         selected =  depSub(c("no", "yes")),
         choiceValues = c(depSub(c("no", "yes")),
                          depSub("no"),
@@ -110,7 +83,7 @@ ui <- fluidPage(# Application title
       radioGroupButtons(
         inputId = "hf",
         "Have you previously had heart failure?",
-        choiceNames = c(HTML("Not <br/>selected"), "No", "Yes"),
+        choiceNames = c(HTML("Unknown"), "No", "Yes"),
         selected =  depSub(c("no", "yes")),
         choiceValues = c(depSub(c("no", "yes")),
                          depSub("no"),
@@ -122,7 +95,7 @@ ui <- fluidPage(# Application title
       radioGroupButtons(
         inputId = "diabetes",
         "Have you ever had a diabetes?",
-        choiceNames = c(HTML("Not <br/>selected"), "No", "Yes"),
+        choiceNames = c(HTML("Unknown"), "No", "Yes"),
         selected =  depSub(c("no", "yes")),
         choiceValues = c(depSub(c("no", "yes")),
                          depSub("no"),
@@ -134,7 +107,7 @@ ui <- fluidPage(# Application title
       radioGroupButtons(
         inputId = "hyperT",
         "Have you ever had a hypertension?",
-        choiceNames = c(HTML("Not <br/>selected"), "No", "Yes"),
+        choiceNames = c(HTML("Unknown"), "No", "Yes"),
         selected =  depSub(c("no", "yes")),
         choiceValues = c(depSub(c("no", "yes")),
                          depSub("no"),
@@ -146,7 +119,7 @@ ui <- fluidPage(# Application title
       radioGroupButtons(
         inputId = "vasc",
         "Do you have vascular disease?",
-        choiceNames = c(HTML("Not <br/>selected"), "No", "Yes"),
+        choiceNames = c(HTML("Unknown"), "No", "Yes"),
         selected =  depSub(c("no", "yes")),
         choiceValues = c(depSub(c("no", "yes")),
                          depSub("no"),
@@ -155,76 +128,54 @@ ui <- fluidPage(# Application title
         justified = TRUE,
         width = button.width
       ),
-      
-      # Color buttons that are higher risk.
-      tags$script(
-        "$(\"input:radio[name='stroke'][value='&quot;yes&quot;']\").parent().css('background-color','#EDB6B2');"
-      ),
-      tags$script(jsButtonColor("stroke", "#B2EDB5", depSub("no"))),
-      
-      tags$script(jsButtonColor("hf", "#EDB6B2", "yes")),
-      tags$script(jsButtonColor("hf", "#B2EDB5", "no")),
-      
-      tags$script(jsButtonColor("diabetes", "#EDB6B2", "yes")),
-      tags$script(jsButtonColor("diabetes", "#B2EDB5", "no")),
-      
-      tags$script(jsButtonColor("hyperT", "#EDB6B2", "yes")),
-      tags$script(jsButtonColor("hyperT", "#B2EDB5", "no")),
-      
-      tags$script(jsButtonColor("vasc", "#EDB6B2", "yes")),
-      tags$script(jsButtonColor("vasc", "#B2EDB5", "no"))
-    ),
-    
-    # Show a plot of the generated distribution
-    mainPanel(
-      plotOutput("distPlot"),
-      tags$h2("Patient's stroke risk is estimated to be:"),
-      tags$h2(strong(textOutput("textRisk"))),
-      br(),
-      hr()
-      # tags$h3("Table for error checking"),
-      # br(),
-      # DT::dataTableOutput("table")
+       # tags$script(jsButtonColor("stroke", "#B2EDB5", depSub('no'))),
+      tags$script("$(\"input:radio[name='stroke'][value= 'no']\").parent().css('background-color', '#DE6B63');")
     )
-  ))
+  ),
+  
+  # Show a plot of the generated distribution
+  column(
+    6,
+    tags$h2("Patient's stroke risk is estimated to be:"),
+    tags$h2(strong(textOutput("textRisk"))),
+    br(),
+    hr()
+    # tags$h3("Table for error checking"),
+    # br(),
+    # DT::dataTableOutput("table")
+  )
+))
 # SERVER ------------------------------------------------------------------
 
 
 # Define server logic
 server <- function(input, output) {
-  is.valid.age <- reactive({
-    # This is only run if the created expression is evaluated inside another
-    # reactive function - I think.
-    !is.na(input$user_age) &&
-      input$user_age >= 20 &&
-      input$user_age <= 99
+  txt2num <- reactive({
+    as.numeric(input$user_age)
   })
-  
-  is.only.one.value <- reactive({
-    !is.na(input$user_age) &&
-      input$user_age >= 20 &&
-      input$user_age <= 99
-  })
+ 
+
   output$textRisk <- renderText({
     
     # Order of subset arguments must be same order as new.col.order variable set in
     # intro.
     # browser()
-    if (is.valid.age()) {
+    age <- txt2num()
+    if (is.valid.age(age)) {
       # browser()
       a <- input$sex
       
-      dat.sub <- stroke.dt[age == input$user_age &
+      dat.sub <- stroke.dt[age == age &
                              female %in% evPar(input$sex) &
                              stroke %in% evPar(input$stroke) &
-                             heartfailure%in% evPar(input$hf) &
+                             heartfailure %in% evPar(input$hf) &
                              diabetes %in% evPar(input$diabetes) &
                              hypertension %in% evPar(input$hyperT) &
                              vascular %in% evPar(input$vasc),
                            range(stroke1y)]
       
-      one.value <- dat.sub[2]-dat.sub[1]<0.001
-      if (one.value){
+      one.value <- dat.sub[2] - dat.sub[1] < 0.001
+      if (one.value) {
         paste0(dat.sub[1], "%")
       } else if (!one.value) {
         paste0("between ", dat.sub[1],
@@ -235,9 +186,10 @@ server <- function(input, output) {
       
       
     }
-    else{
-      paste0("Please enter your age (between 20 and 99)")
+    else {
+      paste0("Please enter a whole number between 20 - 99")
     }
+      
   })
   
   output$table <- DT::renderDataTable(
