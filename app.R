@@ -63,6 +63,7 @@ ui <- fluidPage(
           "Male<br>" = depSub("no"),
           "Female" = depSub("yes")
         ),
+        checkIcon = list(yes = icon("check")),
         selected =  depSub(c("no", "yes")),
         justified = TRUE,
         width = button.width
