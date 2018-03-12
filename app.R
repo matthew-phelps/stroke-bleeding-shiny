@@ -1,3 +1,7 @@
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(shiny, data.table, shinyWidgets, devtools)
+if (!require("riskvisrr")) devtools::install_github("matthew-phelps/riskvisrr")
+
 library(shiny)
 library(riskvisrr)
 library(data.table)
@@ -140,10 +144,10 @@ ui <- fluidPage(
     tags$h2("Patient's stroke risk is estimated to be:"),
     tags$h2(strong(textOutput("textRisk"))),
     br(),
-    hr()
-    # tags$h3("Table for error checking"),
-    # br(),
-    # DT::dataTableOutput("table")
+    hr(),
+    tags$h3("Table for error checking - will not be shown in final verison"),
+    br(),
+    DT::dataTableOutput("table")
   )
 ))
 # SERVER ------------------------------------------------------------------
@@ -160,20 +164,20 @@ server <- function(input, output) {
     
     # Order of subset arguments must be same order as new.col.order variable set in
     # intro.
-    # browser()
-    age <- txt2num()
-    if (is.valid.age(age)) {
+    browser()
+    age_as_number <- txt2num()
+    if (is.valid.age(age_as_number)) {
       # browser()
-      a <- input$sex
       
-      dat.sub <- stroke.dt[age == age &
+      
+      dat.sub <- stroke.dt[age == age_as_number &
                              female %in% evPar(input$sex) &
                              stroke %in% evPar(input$stroke) &
                              heartfailure %in% evPar(input$hf) &
                              diabetes %in% evPar(input$diabetes) &
                              hypertension %in% evPar(input$hyperT) &
                              vascular %in% evPar(input$vasc),
-                           range(stroke1y)]
+                           (stroke1y)]
       
       one.value <- dat.sub[2] - dat.sub[1] < 0.001
       if (one.value) {
@@ -201,7 +205,7 @@ server <- function(input, output) {
                               diabetes %in% evPar(input$diabetes) &
                               hypertension %in% evPar(input$hyperT) &
                               vascular %in% evPar(input$vasc),
-                            1:3])
+                            c(1,2,3,10)])
   )
 }
 
