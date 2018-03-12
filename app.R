@@ -51,9 +51,11 @@ ui <- fluidPage(
   titlePanel("Draft stroke risk calculator"),
   
   # Sidebar with a slider input for number of bins
-  fluidRow(column(
+  fluidRow(
+      column(
     6,
-    wellPanel(
+    div(tags$head(tags$style(type ="text/css", ".container-fluid {  max-width:750px;}")),
+        wellPanel(
       tags$style("#user_age {font-size:38px;height:50px; width: 110px;}"),
       textInput(
         inputId = "user_age",
@@ -137,7 +139,7 @@ ui <- fluidPage(
       ),
        # tags$script(jsButtonColor("stroke", "#B2EDB5", depSub('no'))),
       tags$script("$(\"input:radio[name='stroke'][value= 'no']\").parent().css('background-color', '#DE6B63');")
-    )
+    ))
   ),
   
   # Show a plot of the generated distribution
@@ -146,8 +148,14 @@ ui <- fluidPage(
     tags$h2("Patient's stroke risk is estimated to be:"),
     tags$h2(strong(textOutput("textRisk"))),
     br(),
+    br(),
+    br(),
+    br(),
+    br(),
+    br(),
     hr(),
-    tags$h3("Table for error checking - will not be shown in final verison"),
+    br(),
+    tags$h4(("Table below only for testing - will not be included in final version")),
     br(),
     DT::dataTableOutput("table")
   )
@@ -200,7 +208,10 @@ server <- function(input, output) {
   })
   
   output$table <- DT::renderDataTable(
-    DT::datatable(stroke.dt[age == input$user_age &
+    DT::datatable(filter = "none",
+                  rownames = FALSE,
+                  options = list(sDom  = '<"top">rt<"bottom">ip'),
+                  stroke.dt[age == input$user_age &
                               female %in% evPar(input$sex) &
                               stroke %in% evPar(input$stroke) &
                               heartfailure %in% evPar(input$hf) &
