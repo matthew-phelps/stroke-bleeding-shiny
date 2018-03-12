@@ -1,5 +1,7 @@
+# This intro does not seem to run when script is run as a Shiny app. Must
+# install before running script.
 if (!require("pacman")) install.packages("pacman")
-pacman::p_load(shiny, data.table, shinyWidgets, devtools)
+pacman::p_load("shiny", "data.table", "shinyWidgets", "devtools")
 if (!require("riskvisrr")) devtools::install_github("matthew-phelps/riskvisrr")
 
 library(shiny)
@@ -164,7 +166,7 @@ server <- function(input, output) {
     
     # Order of subset arguments must be same order as new.col.order variable set in
     # intro.
-    browser()
+    # browser()
     age_as_number <- txt2num()
     if (is.valid.age(age_as_number)) {
       # browser()
@@ -177,7 +179,7 @@ server <- function(input, output) {
                              diabetes %in% evPar(input$diabetes) &
                              hypertension %in% evPar(input$hyperT) &
                              vascular %in% evPar(input$vasc),
-                           (stroke1y)]
+                           range(stroke1y)]
       
       one.value <- dat.sub[2] - dat.sub[1] < 0.001
       if (one.value) {
