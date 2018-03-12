@@ -67,76 +67,99 @@ button.width <- "210px"
 # UI ----------------------------------------------------------------------
 
 # Define UI for application that draws a histogram
-ui <- fluidPage(
-  
-  # Application title
+ui <- fluidPage(# Application title
   titlePanel("Stroke Risk Communication"),
   
-  # Sidebar with a slider input for number of bins 
+  # Sidebar with a slider input for number of bins
   sidebarLayout(
     sidebarPanel(
       tags$style("#user_age {font-size:38px;height:50px; width: 110px;}"),
-      numericInput(inputId = "user_age",
-                   "Patient's age:", value = NULL,
-                   min = 20, max = 99),
+      numericInput(
+        inputId = "user_age",
+        "Patient's age:",
+        value = NULL,
+        min = 20,
+        max = 99
+      ),
       
-      radioGroupButtons(inputId = "sex",
-                        label = "Male or female:",
-                        choiceNames = c(HTML("Not <br/>selected"),
-                                         HTML("Male <br/> "), HTML("Female<br/> ")),
-                        selected =  depSub(c("no", "yes")),
-                        choiceValues = c(depSub(c("no", "yes")),
-                                         depSub("no"),
-                                         depSub("yes"))),
+      radioGroupButtons(
+        inputId = "sex",
+        label = "Male or female:",
+        choices = c(
+          "Not <br>selected" = depSub(c("no", "yes")),
+          "Male<br>" = depSub("no"),
+          "Female" = depSub("yes")
+        ),
+        selected =  depSub(c("no", "yes")),
+        justified = TRUE,
+        width = button.width
+      ),
       
-      radioGroupButtons(inputId = "stroke",
-                        "Have you ever had a stroke?",
-                        choiceNames = c( HTML("Not <br/>selected"), "No", "Yes"),
-                        selected =  depSub(c("no", "yes")),
-                        choiceValues = c(depSub(c("no", "yes")),
-                                         depSub("no"),
-                                         depSub("yes")),
-                        checkIcon = list(yes = icon("check")),
-                        justified = TRUE, width = button.width),
-      radioGroupButtons(inputId = "hf",
-                        "Have you previously had heart failure?",
-                        choiceNames = c( "Not selected", "No", "Yes"),
-                        selected =  depSub(c("no", "yes")),
-                        choiceValues = c(depSub(c("no", "yes")),
-                                         depSub("no"),
-                                         depSub("yes")),
-                        checkIcon = list(yes = icon("check")),
-                        justified = TRUE, width = button.width),
-      radioGroupButtons(inputId = "diabetes",
-                        "Have you ever had a diabetes?",
-                        choiceNames = c( "Not selected", "No", "Yes"),
-                        selected =  depSub(c("no", "yes")),
-                        choiceValues = c(depSub(c("no", "yes")),
-                                         depSub("no"),
-                                         depSub("yes")),
-                        checkIcon = list(yes = icon("check")),
-                        justified = TRUE, width = button.width),
-      radioGroupButtons(inputId = "hyperT",
-                        "Have you ever had a hypertension?",
-                        choiceNames = c( "Not selected", "No", "Yes"),
-                        selected =  depSub(c("no", "yes")),
-                        choiceValues = c(depSub(c("no", "yes")),
-                                         depSub("no"),
-                                         depSub("yes")),
-                        checkIcon = list(yes = icon("check")),
-                        justified = TRUE, width = button.width),
-      radioGroupButtons(inputId = "vasc",
-                        "Do you have vascular disease?",
-                        choiceNames = c( "Not selected", "No", "Yes"),
-                        selected =  depSub(c("no", "yes")),
-                        choiceValues = c(depSub(c("no", "yes")),
-                                         depSub("no"),
-                                         depSub("yes")),
-                        checkIcon = list(yes = icon("check")),
-                        justified = TRUE, width = button.width),
+      radioGroupButtons(
+        inputId = "stroke",
+        "Have you ever had a stroke?",
+        choiceNames = c(HTML("Not <br/>selected"), "No", "Yes"),
+        selected =  depSub(c("no", "yes")),
+        choiceValues = c(depSub(c("no", "yes")),
+                         depSub("no"),
+                         depSub("yes")),
+        checkIcon = list(yes = icon("check")),
+        justified = TRUE,
+        width = button.width
+      ),
+      radioGroupButtons(
+        inputId = "hf",
+        "Have you previously had heart failure?",
+        choiceNames = c(HTML("Not <br/>selected"), "No", "Yes"),
+        selected =  depSub(c("no", "yes")),
+        choiceValues = c(depSub(c("no", "yes")),
+                         depSub("no"),
+                         depSub("yes")),
+        checkIcon = list(yes = icon("check")),
+        justified = TRUE,
+        width = button.width
+      ),
+      radioGroupButtons(
+        inputId = "diabetes",
+        "Have you ever had a diabetes?",
+        choiceNames = c(HTML("Not <br/>selected"), "No", "Yes"),
+        selected =  depSub(c("no", "yes")),
+        choiceValues = c(depSub(c("no", "yes")),
+                         depSub("no"),
+                         depSub("yes")),
+        checkIcon = list(yes = icon("check")),
+        justified = TRUE,
+        width = button.width
+      ),
+      radioGroupButtons(
+        inputId = "hyperT",
+        "Have you ever had a hypertension?",
+        choiceNames = c(HTML("Not <br/>selected"), "No", "Yes"),
+        selected =  depSub(c("no", "yes")),
+        choiceValues = c(depSub(c("no", "yes")),
+                         depSub("no"),
+                         depSub("yes")),
+        checkIcon = list(yes = icon("check")),
+        justified = TRUE,
+        width = button.width
+      ),
+      radioGroupButtons(
+        inputId = "vasc",
+        "Do you have vascular disease?",
+        choiceNames = c(HTML("Not <br/>selected"), "No", "Yes"),
+        selected =  depSub(c("no", "yes")),
+        choiceValues = c(depSub(c("no", "yes")),
+                         depSub("no"),
+                         depSub("yes")),
+        checkIcon = list(yes = icon("check")),
+        justified = TRUE,
+        width = button.width
+      ),
       
       # Color buttons that are higher risk.
-      tags$script("$(\"input:radio[name='stroke'][value='&quot;yes&quot;']\").parent().css('background-color','#EDB6B2');"),
+      tags$script(
+        "$(\"input:radio[name='stroke'][value='&quot;yes&quot;']\").parent().css('background-color','#EDB6B2');"
+      ),
       tags$script(jsButtonColor("stroke", "#B2EDB5", depSub("no"))),
       
       tags$script(jsButtonColor("hf", "#EDB6B2", "yes")),
@@ -158,13 +181,12 @@ ui <- fluidPage(
       tags$h2("Patient's stroke risk is estimated to be:"),
       tags$h2(strong(textOutput("textRisk"))),
       br(),
-      hr(),
-      tags$h3("Table for error checking"),
-      br(),
-      DT::dataTableOutput("table")
+      hr()
+      # tags$h3("Table for error checking"),
+      # br(),
+      # DT::dataTableOutput("table")
     )
-  )
-)
+  ))
 # SERVER ------------------------------------------------------------------
 
 
@@ -172,15 +194,13 @@ ui <- fluidPage(
 server <- function(input, output) {
   is.valid.age <- reactive({
     # This is only run if the created expression is evaluated inside another
-    # reactive function - I think
+    # reactive function - I think.
     !is.na(input$user_age) &&
       input$user_age >= 20 &&
       input$user_age <= 99
   })
   
   is.only.one.value <- reactive({
-    # This is only run if the created expression is evaluated inside another
-    # reactive function - I think
     !is.na(input$user_age) &&
       input$user_age >= 20 &&
       input$user_age <= 99
@@ -192,6 +212,7 @@ server <- function(input, output) {
     # browser()
     if (is.valid.age()) {
       # browser()
+      a <- input$sex
       
       dat.sub <- stroke.dt[age == input$user_age &
                              female %in% evPar(input$sex) &
