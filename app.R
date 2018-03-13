@@ -9,6 +9,7 @@ library(riskvisrr)
 library(data.table)
 library(shinyWidgets)
 library(shinythemes)
+library(shinyjs)
 source("functions.R")
 stroke.dt <- data.table(stroke1yr)
 
@@ -153,6 +154,8 @@ ui <- fluidPage(
     # Show a plot of the generated distribution
     column(
       6,
+      useShinyjs(),
+      shinyjs::runcodeUI(),
       tags$h2("1-year", strong("stroke"), "risk is estimated to be:"),
       tags$h2(strong(textOutput("strokeRisk"))),
       br(),
@@ -176,12 +179,13 @@ ui <- fluidPage(
 
 
 # Define server logic
+
 server <- function(input, output) {
   txt2num <- reactive({
     as.numeric(input$user_age)
   })
  
-
+  shinyjs::runcodeServer()
   output$strokeRisk <- renderText({
     
     # Order of subset arguments must be same order as new.col.order variable set in
