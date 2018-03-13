@@ -42,7 +42,7 @@ setkeyv(stroke.dt, new.var.order)
 
 # Variables ---------------------------------------------------------------
 
-button.width <- "300px"
+button.width <- "320px"
 
 
 # UI ----------------------------------------------------------------------
@@ -60,7 +60,7 @@ ui <- fluidPage(
     column(6,
            div(
              tags$head(
-               tags$style(type = "text/css", ".container-fluid {  max-width:750px;}") # max width for column
+               tags$style(type = "text/css", ".container-fluid {  max-width:760px;}") # max width for column
              ),
              wellPanel(
                tags$style("#user_age {font-size:38px;height:50px; width: 110px;}"), # font size 
@@ -155,7 +155,7 @@ ui <- fluidPage(
     column(
       6,
       useShinyjs(),
-      shinyjs::runcodeUI(),
+      
       tags$h2("1-year", strong("stroke"), "risk is estimated to be:"),
       tags$h2(strong(textOutput("strokeRisk"))),
       br(),
@@ -171,6 +171,7 @@ ui <- fluidPage(
       br(),
       tags$h4(("Table below only for testing - will not be included in final version")
       ),
+      shinyjs::runcodeUI(),
       br(),
       DT::dataTableOutput("table")
     )
