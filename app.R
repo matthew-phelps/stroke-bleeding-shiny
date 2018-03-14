@@ -60,7 +60,7 @@ ui <- fluidPage(
     column(6,
            div(
              tags$head(
-               tags$style(type = "text/css", ".container-fluid {  max-width:760px;}") # max width for column
+               tags$style(type = "text/css", ".container-fluid {max-width:760px;}") # max width for column
              ),
              wellPanel(
                tags$style("#user_age {font-size:38px;height:50px; width: 110px;}"), # font size 
