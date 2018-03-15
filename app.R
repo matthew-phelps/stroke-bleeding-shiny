@@ -1,5 +1,3 @@
-# This intro does not seem to run when script is run as a Shiny app. Must
-# install before running script.
 if (!require("pacman")) install.packages("pacman")
 pacman::p_load("shiny", "data.table", "shinyWidgets", "devtools", "shinythemes")
 if (!require("riskvisrr")) devtools::install_github("matthew-phelps/riskvisrr")
@@ -11,6 +9,7 @@ library(shinyWidgets)
 library(shinythemes)
 library(shinyjs)
 source("functions.R")
+source("UI_text.R")
 stroke.dt <- data.table(stroke1yr)
 
 # Re-order columns to the order patients will enter their variables information
@@ -52,7 +51,7 @@ button.width <- "320px"
 ui <- fluidPage(
   # Application title
   # shinythemes::themeSelector(),
-  titlePanel("Draft stroke risk calculator"),
+  titlePanel(title_txt),
   theme = shinythemes::shinytheme(theme = "yeti"),
   # Sidebar with a slider input for number of bins
   fluidRow(
