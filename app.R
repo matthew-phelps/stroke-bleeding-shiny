@@ -47,34 +47,41 @@ button.width <- "320px"
 # UI ----------------------------------------------------------------------
 
 
+
 # Define UI for application that draws a histogram
 ui <- fluidPage(
   # Application title
   # shinythemes::themeSelector(),
-  titlePanel(title_txt),
+  useShinyjs(),
+   titlePanel(title_txt),
   theme = shinythemes::shinytheme(theme = "yeti"),
+  
+  # Give CSS styles to selected elements
+  tags$head(
+    tags$style(type = "text/css", "#results {max-width:620px;}"),
+
+    tags$style(type = "text/css", "#input_col {max-width:380px;}"), #max width input
+    tags$style(type = "text/css", ".container-fluid {margin:auto; max-width: 1000px}"),
+
+    tags$style("#user_age {font-size:38px;height:50px; width: 110px;}") # font size
+  ),
   # Sidebar with a slider input for number of bins
   fluidRow(
-    
-    column(6,
-           div(
-             tags$head(
-               tags$style(type = "text/css", ".container-fluid {max-width:760px;}") # max width for column
-             ),
+    column(id = "input_col", 6,
+           # toggleClass("column_id", "custom_class")
              wellPanel(
-               tags$style("#user_age {font-size:38px;height:50px; width: 110px;}"), # font size 
                textInput(
                  inputId = "user_age",
-                 label = "Patient's age:",
+                 label = in_age,
                  value = NULL,
                  placeholder = "Age"
                ),
                radioGroupButtons(
                  inputId = "sex",
-                 label = "Male or female:",
+                 label = in_sex,
                  choices = c(
                    "Unknown" = depSub(c("no", "yes")),
-                   "Male<br>" = depSub("no"),
+                   "Male" = depSub("no"),
                    "Female" = depSub("yes")
                  ),
                  checkIcon = list(yes = icon("check")),
@@ -85,7 +92,7 @@ ui <- fluidPage(
                
                radioGroupButtons(
                  inputId = "stroke",
-                 "Have you ever had a stroke?",
+                 label = in_stroke,
                  choiceNames = c(HTML("Unknown"), "No", "Yes"),
                  selected =  depSub(c("no", "yes")),
                  choiceValues = c(depSub(c("no", "yes")),
@@ -97,7 +104,7 @@ ui <- fluidPage(
                ),
                radioGroupButtons(
                  inputId = "hf",
-                 "Have you previously had heart failure?",
+                 label = in_hf,
                  choiceNames = c(HTML("Unknown"), "No", "Yes"),
                  selected =  depSub(c("no", "yes")),
                  choiceValues = c(depSub(c("no", "yes")),
@@ -109,7 +116,7 @@ ui <- fluidPage(
                ),
                radioGroupButtons(
                  inputId = "diabetes",
-                 "Have you ever had a diabetes?",
+                 label = in_diab,
                  choiceNames = c(HTML("Unknown"), "No", "Yes"),
                  selected =  depSub(c("no", "yes")),
                  choiceValues = c(depSub(c("no", "yes")),
@@ -121,7 +128,7 @@ ui <- fluidPage(
                ),
                radioGroupButtons(
                  inputId = "hyperT",
-                 "Have you ever had a hypertension?",
+                 label = in_hyperT,
                  choiceNames = c(HTML("Unknown"), "No", "Yes"),
                  selected =  depSub(c("no", "yes")),
                  choiceValues = c(depSub(c("no", "yes")),
@@ -133,7 +140,7 @@ ui <- fluidPage(
                ),
                radioGroupButtons(
                  inputId = "vasc",
-                 "Do you have vascular disease?",
+                 label = in_vasc,
                  choiceNames = c(HTML("Unknown"), "No", "Yes"),
                  selected =  depSub(c("no", "yes")),
                  choiceValues = c(depSub(c("no", "yes")),
@@ -145,20 +152,21 @@ ui <- fluidPage(
                ),
                # tags$script(jsButtonColor("stroke", "#B2EDB5", depSub('no'))),
                tags$script(
-                 "$(\"input:radio[name='stroke'][value= 'no']\").parent().css('background-color', '#DE6B63');"
+                 "$(\"input:radio[name='stroke'][value= no']\").parent().css('background-color', '#DE6B63');"
                )
-             )
+             
            )),
     
     # Show a plot of the generated distribution
-    column(
+        column(id = "results",
       6,
-      useShinyjs(),
       
-      tags$h2("1-year", strong("stroke"), "risk is estimated to be:"),
+      
+      
+      tags$h2(out_stroke),
       tags$h2(strong(textOutput("strokeRisk"))),
       br(),
-      tags$h2("1-year", strong("thromboembolism"), "risk is estimated to be:"),
+      tags$h2(out_thomb),
       tags$h2(strong(textOutput("thromb1y"))),
       br(),
       br(),
@@ -175,9 +183,9 @@ ui <- fluidPage(
       DT::dataTableOutput("table")
     )
   ))
+
+
 # SERVER ------------------------------------------------------------------
-
-
 # Define server logic
 
 server <- function(input, output) {
@@ -218,7 +226,7 @@ server <- function(input, output) {
       
     }
     else {
-      paste0("Please enter a whole number between 20 - 99")
+      paste0(enter_age)
     }
       
   })
