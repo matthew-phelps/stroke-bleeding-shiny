@@ -16,13 +16,6 @@ depSub <- function(a){
   # shortcut helper n
   deparse(substitute(a))
 }
-f <- function(x) substitute(x)
-g <- function(x) {
-  # browser()
-  deparse(f(x))
-}
-class(substitute(1:10))
-class(quote(1:10))
 
 evPar <- function(x){
   # short helper fun
