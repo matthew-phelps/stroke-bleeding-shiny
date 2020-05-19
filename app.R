@@ -162,7 +162,6 @@ ui <- fluidPage(
       6,
       
       
-      
       tags$h2(out_stroke),
       tags$h2(strong(textOutput("strokeRisk"))),
       br(),
